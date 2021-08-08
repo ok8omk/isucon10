@@ -315,7 +315,7 @@ def post_estate_nazotte():
     )
 
     query = f"select * from estate where ST_Contains(ST_PolygonFromText('{polygon_text}'), ST_GeomFromText(concat('POINT(', latitude, ' ', longitude, ')'))) ORDER BY popularity DESC, id ASC"
-    print(query)
+    #print(query)
     cnx = cnxpool.connect()
     try:
         cur = cnx.cursor(dictionary=True)

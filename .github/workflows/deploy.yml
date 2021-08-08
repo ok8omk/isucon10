@@ -24,4 +24,4 @@ jobs:
           git pull
           sh $DIR/deploy/restart.sh
           sh $DIR/deploy/bench.sh
-          sh $DIR/deploy/notify.sh "== deploy start =="
+          sh $DIR/deploy/notify.sh "== deploy end =="

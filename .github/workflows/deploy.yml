@@ -1,5 +1,8 @@
 name: remote ssh command
-on: [push]
+on:
+  push:
+    branches:
+      - main
 jobs:
 
   build:
@@ -8,16 +11,19 @@ jobs:
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
+      env: 
+        DIR: '/home/isucon/isucon10'
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-	script: |
-	  DIR='/home/isucon/isucon10'
+        key: ${{ secrets.KEY }}
+        port: 80
+        envs: DIR
+        script: |
           $DIR/deploy/notify.sh "== deploy start =="
           cd $DIR/deploy
           git pull
           sudo systemctl restart mysql
           sudo systemctl restart nginx
+          sudo systemctl restart isuumo.python.service
           $DIR/deploy/notify.sh "== deploy end =="

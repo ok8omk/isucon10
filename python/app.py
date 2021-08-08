@@ -319,6 +319,9 @@ def post_estate_nazotte():
         polygon_text = (
             f"POLYGON(({','.join(['{} {}'.format(c['latitude'], c['longitude']) for c in coordinates])}))"
         )
+        geom_text = (
+            'CONCAT("POINT", latitude, " ", longitude, ")")'
+        )
 
         cur.execute(
             (
@@ -326,7 +329,7 @@ def post_estate_nazotte():
                 " FROM ("
                 "   SELECT"
                 "     *,"
-                "     ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(latitude, longitude)) AS is_contains"
+                "     ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(%s)) AS is_contains"
                 "     FROM ("
                 "       SELECT * FROM estate"
                 "         WHERE latitude <= %s AND latitude >= %s AND longitude <= %s AND longitude >= %s"
@@ -338,6 +341,7 @@ def post_estate_nazotte():
             ),
             (
                 polygon_text,
+                geom_text,
                 bounding_box["bottom_right_corner"]["latitude"],
                 bounding_box["top_left_corner"]["latitude"],
                 bounding_box["bottom_right_corner"]["longitude"],

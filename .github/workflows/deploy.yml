@@ -19,8 +19,9 @@ jobs:
         key: ${{ secrets.KEY }}
         envs: DIR
         script: |
-          sudo sh $DIR/deploy/notify.sh "== deploy start =="
+          sh $DIR/deploy/notify.sddh "== deploy start =="
           cd $DIR
           git pull
-          sudo sh $DIR/deploy/restart.sh
-          sudo sh $DIR/deploy/notify.sh "== deploy end =="
+          sh $DIR/deploy/restart.sh
+          sh $DIR/deploy/bench.sh
+          sh $DIR/deploy/notify.sh "== deploy start =="

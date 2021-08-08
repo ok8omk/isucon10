@@ -25,5 +25,5 @@ jobs:
           git pull
           sudo systemctl restart mysql
           sudo systemctl restart nginx
-          sudo systemctl restartisuumo.python.service
+          sudo systemctl restart isuumo.python.service
           $DIR/deploy/notify.sh "== deploy end =="

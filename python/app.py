@@ -316,35 +316,44 @@ def post_estate_nazotte():
     cnx = cnxpool.connect()
     try:
         cur = cnx.cursor(dictionary=True)
+        polygon_text = (
+            f"POLYGON(({','.join(['{} {}'.format(c['latitude'], c['longitude']) for c in coordinates])}))"
+        )
+        geom_text = (
+            "CONCAT(\"POINT(\", latitude, \" \", longitude, \")\")"
+        )
+
         cur.execute(
             (
-                "SELECT * FROM estate"
-                " WHERE latitude <= %s AND latitude >= %s AND longitude <= %s AND longitude >= %s"
-                " ORDER BY popularity DESC, id ASC"
+                " SELECT *"
+                " FROM ("
+                "   SELECT"
+                "     *,"
+                "     ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(%s)) AS is_contains"
+                "     FROM ("
+                "       SELECT * FROM estate"
+                "         WHERE latitude <= %s AND latitude >= %s AND longitude <= %s AND longitude >= %s"
+                "         ORDER BY popularity DESC, id ASC"
+                "     ) AS t1"
+                " ) AS t2"
+                " WHERE is_contains = 1"
+                " ORDER BY popularity DESC, id ASC;"
             ),
             (
+                polygon_text,
+                geom_text,
                 bounding_box["bottom_right_corner"]["latitude"],
                 bounding_box["top_left_corner"]["latitude"],
                 bounding_box["bottom_right_corner"]["longitude"],
                 bounding_box["top_left_corner"]["longitude"],
-            ),
+            )
         )
         estates = cur.fetchall()
-        estates_in_polygon = []
-        for estate in estates:
-            query = "SELECT * FROM estate WHERE id = %s AND ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(%s))"
-            polygon_text = (
-                f"POLYGON(({','.join(['{} {}'.format(c['latitude'], c['longitude']) for c in coordinates])}))"
-            )
-            geom_text = f"POINT({estate['latitude']} {estate['longitude']})"
-            cur.execute(query, (estate["id"], polygon_text, geom_text))
-            if len(cur.fetchall()) > 0:
-                estates_in_polygon.append(estate)
     finally:
         cnx.close()
 
     results = {"estates": []}
-    for i, estate in enumerate(estates_in_polygon):
+    for i, estate in enumerate(estates):
         if i >= NAZOTTE_LIMIT:
             break
         results["estates"].append(camelize(estate))

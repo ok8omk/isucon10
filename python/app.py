@@ -334,8 +334,8 @@ def post_estate_nazotte():
                 "       SELECT * FROM estate"
                 "         WHERE latitude <= %s AND latitude >= %s AND longitude <= %s AND longitude >= %s"
                 "         ORDER BY popularity DESC, id ASC"
-                "     )"
-                " )"
+                "     ) AS t1"
+                " ) AS t2"
                 " WHERE is_contains = 1"
                 " ORDER BY popularity DESC, id ASC;"
             ),

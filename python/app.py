@@ -323,16 +323,28 @@ def post_estate_nazotte():
         cur.execute(
             (
                 " SELECT *"
-                " FROM estate"
-                " WHERE"
+                " FROM ("
+                "   SELECT"
+                "     *,"
                 "     ST_Contains("
                 "       ST_PolygonFromText(%s),"
                 "       ST_GeomFromText(CONCAT(\"POINT(\", latitude, \" \", longitude, \")\"))"
-                "     ) = 1"
+                "     ) AS is_contains"
+                "     FROM ("
+                "       SELECT * FROM estate"
+                "         WHERE latitude <= %s AND latitude >= %s AND longitude <= %s AND longitude >= %s"
+                "         ORDER BY popularity DESC, id ASC"
+                "     ) AS t1"
+                " ) AS t2"
+                " WHERE is_contains = 1"
                 " ORDER BY popularity DESC, id ASC;"
             ),
             (
-                polygon_text
+                polygon_text,
+                bounding_box["bottom_right_corner"]["latitude"],
+                bounding_box["top_left_corner"]["latitude"],
+                bounding_box["bottom_right_corner"]["longitude"],
+                bounding_box["top_left_corner"]["longitude"],
             )
         )
         estates = cur.fetchall()

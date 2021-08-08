@@ -1,6 +1,6 @@
 #!/bin/bash
 
-URL='https://hooks.slack.com/services/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'
+URL='https://hooks.slack.com/services/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'
 
 CHANNEL='#isucon'
 USERNAME='server'

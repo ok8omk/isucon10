@@ -320,7 +320,7 @@ def post_estate_nazotte():
             f"POLYGON(({','.join(['{} {}'.format(c['latitude'], c['longitude']) for c in coordinates])}))"
         )
         geom_text = (
-            'CONCAT("POINT", latitude, " ", longitude, ")")'
+            "CONCAT(\"POINT(\", latitude, \" \", longitude, \")\")"
         )
 
         cur.execute(

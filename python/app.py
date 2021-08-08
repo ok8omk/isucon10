@@ -320,8 +320,8 @@ def post_estate_nazotte():
         cur.execute(
             (
                 "select * from estate"
-                "where ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(concat('POINT(', latitude, ' ', longitude, ')')))"
-                "ORDER BY popularity DESC, id ASC"
+                " where ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(concat('POINT(', latitude, ' ', longitude, ')')))"
+                " ORDER BY popularity DESC, id ASC"
             ),
             (
                 polygon_text

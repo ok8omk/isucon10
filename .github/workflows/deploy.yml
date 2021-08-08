@@ -13,11 +13,12 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-	script: |
-	  DIR='/home/isucon/isucon10'
+        script: |
+          DIR='/home/isucon/isucon10'
           $DIR/deploy/notify.sh "== deploy start =="
           cd $DIR/deploy
           git pull
           sudo systemctl restart mysql
           sudo systemctl restart nginx
+          sudo systemctl restartisuumo.python.service
           $DIR/deploy/notify.sh "== deploy end =="

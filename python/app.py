@@ -342,7 +342,6 @@ def post_estate_nazotte():
                 bounding_box["top_left_corner"]["latitude"],
                 bounding_box["bottom_right_corner"]["longitude"],
                 bounding_box["top_left_corner"]["longitude"],
-                NAZOTTE_LIMIT
             )
         )
         estates = cur.fetchall()

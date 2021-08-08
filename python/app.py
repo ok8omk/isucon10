@@ -314,42 +314,13 @@ def post_estate_nazotte():
         f"POLYGON(({','.join(['{} {}'.format(c['latitude'], c['longitude']) for c in coordinates])}))"
     )
 
+    query = f"select * from estate where ST_Contains(ST_PolygonFromText('{polygon_text}'), ST_GeomFromText(concat('POINT(', latitude, ' ', longitude, ')'))) ORDER BY popularity DESC, id ASC"
+    print(query)
     cnx = cnxpool.connect()
     try:
         cur = cnx.cursor(dictionary=True)
-        cur.execute(
-            (
-                "select * from estate"
-                " where ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(concat('POINT(', latitude, ' ', longitude, ')')))"
-                " ORDER BY popularity DESC, id ASC"
-            ),
-            (
-                polygon_text
-            )
-        )
-        
-        # cur.execute(
-        #     (
-        #         "SELECT * FROM estate"
-        #         " WHERE latitude <= %s AND latitude >= %s AND longitude <= %s AND longitude >= %s"
-        #         " ORDER BY popularity DESC, id ASC"
-        #     ),
-        #     (
-        #         bounding_box["bottom_right_corner"]["latitude"],
-        #         bounding_box["top_left_corner"]["latitude"],
-        #         bounding_box["bottom_right_corner"]["longitude"],
-        #         bounding_box["top_left_corner"]["longitude"],
-        #     ),
-        # )
+        cur.execute(query)
         estates_in_polygon = cur.fetchall()
-
-        # estates_in_polygon = []
-        # for estate in estates:
-        #     query = "SELECT * FROM estate WHERE id = %s AND ST_Contains(ST_PolygonFromText(%s), ST_GeomFromText(%s))"
-        #     geom_text = f"POINT({estate['latitude']} {estate['longitude']})"
-        #     cur.execute(query, (estate["id"], polygon_text, geom_text))
-        #     if len(cur.fetchall()) > 0:
-        #         estates_in_polygon.append(estate)
     finally:
         cnx.close()
 

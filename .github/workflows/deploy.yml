@@ -19,7 +19,7 @@ jobs:
         key: ${{ secrets.KEY }}
         envs: DIR
         script: |
-          sh $DIR/deploy/notify.sddh "== deploy start =="
+          sh $DIR/deploy/notify.sh "== deploy start =="
           cd $DIR
           git pull
           sh $DIR/deploy/restart.sh

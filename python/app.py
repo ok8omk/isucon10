@@ -327,8 +327,8 @@ def post_estate_nazotte():
                 "   SELECT"
                 "     *,"
                 "     ST_Contains("
-                "       ST_PolygonFromText(%s),
-                "       ST_GeomFromText(CONCAT(\"POINT(\", latitude, \" \", longitude, \")\"))
+                "       ST_PolygonFromText(%s),"
+                "       ST_GeomFromText(CONCAT(\"POINT(\", latitude, \" \", longitude, \")\"))"
                 "     ) AS is_contains"
                 "     FROM ("
                 "       SELECT * FROM estate"

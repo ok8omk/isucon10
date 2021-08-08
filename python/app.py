@@ -1,4 +1,4 @@
-from os import getenv, path
+from os import getenv
 import json
 import subprocess
 from io import StringIO
@@ -8,12 +8,15 @@ from werkzeug.exceptions import BadRequest, NotFound
 import mysql.connector
 from sqlalchemy.pool import QueuePool
 from humps import camelize
+from pathlib import Path
 
 LIMIT = 20
 NAZOTTE_LIMIT = 50
 
-chair_search_condition = json.load(open("../fixture/chair_condition.json", "r"))
-estate_search_condition = json.load(open("../fixture/estate_condition.json", "r"))
+ROOT_PATH = Path('/home/isucon/isuumo/webapp')
+
+chair_search_condition = json.load(open(ROOT_PATH / "fixture/chair_condition.json", "r"))
+estate_search_condition = json.load(open(ROOT_PATH / "fixture/estate_condition.json", "r"))
 
 app = flask.Flask(__name__)
 
@@ -45,7 +48,6 @@ def select_row(*args, **kwargs):
 
 @app.route("/initialize", methods=["POST"])
 def post_initialize():
-    sql_dir = "../mysql/db"
     sql_files = [
         "0_Schema.sql",
         "1_DummyEstateData.sql",
@@ -53,7 +55,7 @@ def post_initialize():
     ]
 
     for sql_file in sql_files:
-        command = f"mysql -h {mysql_connection_env['host']} -u {mysql_connection_env['user']} -p{mysql_connection_env['password']} -P {mysql_connection_env['port']} {mysql_connection_env['database']} < {path.join(sql_dir, sql_file)}"
+        command = f"mysql -h {mysql_connection_env['host']} -u {mysql_connection_env['user']} -p{mysql_connection_env['password']} -P {mysql_connection_env['port']} {mysql_connection_env['database']} < {ROOT_PATH / 'mysql/db' / sql_file}"
         subprocess.run(["bash", "-c", command])
 
     return {"language": "python"}
@@ -313,7 +315,6 @@ def post_estate_nazotte():
     polygon_text = (
         f"POLYGON(({','.join(['{} {}'.format(c['latitude'], c['longitude']) for c in coordinates])}))"
     )
-
     query = f"select * from estate where ST_Contains(ST_PolygonFromText('{polygon_text}'), ST_GeomFromText(concat('POINT(', latitude, ' ', longitude, ')'))) ORDER BY popularity DESC, id ASC"
     #print(query)
     cnx = cnxpool.connect()

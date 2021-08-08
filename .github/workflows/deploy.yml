@@ -1,0 +1,27 @@
+name: remote ssh command
+on:
+  push:
+    branches:
+      - main
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      env: 
+        DIR: '/home/isucon/isucon10'
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        key: ${{ secrets.KEY }}
+        envs: DIR
+        script: |
+          sh $DIR/deploy/notify.sh "== deploy start =="
+          cd $DIR
+          git pull
+          sh $DIR/deploy/restart.sh
+          sh $DIR/deploy/bench.sh
+          sh $DIR/deploy/notify.sh "== deploy end =="

@@ -8,13 +8,14 @@ jobs:
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@master
+      env: DIR: '/home/isucon/isucon10'
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        key: ${{ secrets.KEY }}
+        port: 80
+        envs: DIR
         script: |
-          DIR='/home/isucon/isucon10'
           $DIR/deploy/notify.sh "== deploy start =="
           cd $DIR/deploy
           git pull
